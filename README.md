@@ -4,6 +4,8 @@
 
 This project implements a sophisticated **Retrieval-Augmented Generation (RAG)** system using Snowflake Cortex Agents integrated with Slack. It combines hybrid search and accurate SQL generation to provide AI-powered data interactions through a conversational interface.
 
+**Recommend of reading the step of making project here: [Original QuickStart Guide](https://quickstarts.snowflake.com/guide/integrate_snowflake_cortex_agents_with_slack/index.html)**
+
 **Key Features:**
 - 🔍 **Document Search (RAG)**: Query PDF documents using vector similarity search
 - 📊 **Data Analytics**: Generate SQL queries and visualizations from natural language
@@ -257,7 +259,7 @@ python -c "from cortex_chat import CortexChat; print('Import successful')"
 
 ## 📚 Resources
 
-- [Snowflake Cortex Agents Documentation](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agent)
+- [Snowflake Cortex Agents Documentation](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents)
 - [Slack Bolt Python Framework](https://slack.dev/bolt-python/tutorial/getting-started)
 - [Original QuickStart Guide](https://quickstarts.snowflake.com/guide/integrate_snowflake_cortex_agents_with_slack/index.html)
 
