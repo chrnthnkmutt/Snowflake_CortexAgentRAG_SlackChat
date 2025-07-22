@@ -315,8 +315,8 @@ def vectorize_answer(question):
     SESSION.use_role("SYSADMIN")
     df = SESSION.table('DASH_DB.DASH_SCHEMA.VECTORIZED_PDFS')
     vector_search = df.with_column('QUESTION',F.lit(question))
-    vector_search = vector_search.with_column('EMBEDQ',F.call_function('SNOWFLAKE.CORTEX.EMBED_TEXT_768',
-                                                    F.lit('snowflake-arctic-embed-m'),
+    vector_search = vector_search.with_column('EMBEDQ',F.call_function('SNOWFLAKE.CORTEX.EMBED_TEXT_1024',
+                                                    F.lit('voyage-multilingual-2'),
                                                     F.col('QUESTION'))).cache_result()
     vector_similar = vector_search.with_column('search',F.call_function('VECTOR_COSINE_SIMILARITY'
                                            ,F.col('EMBED'),
