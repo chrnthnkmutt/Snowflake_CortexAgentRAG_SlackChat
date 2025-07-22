@@ -9,6 +9,8 @@ from dotenv import load_dotenv
 import matplotlib
 import matplotlib.pyplot as plt 
 from snowflake.snowpark import Session
+from snowflake.snowpark import functions as F
+from snowflake.snowpark.types import *
 import numpy as np
 import cortex_chat
 import time
@@ -74,6 +76,8 @@ Were polished and ready, the hype never delayed.
 def handle_message_events(ack, body, say):
     try:
         ack()
+        #channel_id = body['event']['channel']
+        #get_chat_history = app.client.conversations_history(channel=channel_id, limit=20)
         prompt = body['event']['text']
         say(
             text = "Snowflake Cortex AI is generating a response",
@@ -118,7 +122,8 @@ def handle_message_events(ack, body, say):
         )        
 
 def ask_agent(prompt):
-    resp = CORTEX_APP.chat(prompt)
+    resp = vectorize_answer(prompt)
+    #resp = CORTEX_APP.chat(prompt)
     return resp
 
 def display_agent_response(content,say):
@@ -263,7 +268,7 @@ def plot_chart(df):
     return img_url
 
 def init():
-    conn,jwt,cortex_app = None,None,None
+    conn,session,jwt,cortex_app = None,None,None,None
 
     conn = snowflake.connector.connect(
         user=USER,
@@ -274,6 +279,20 @@ def init():
         role=ROLE,
         host=HOST
     )
+
+    connection_parameters = {
+        "user":USER,
+        "authenticator":"SNOWFLAKE_JWT",
+        "private_key_file":RSA_PRIVATE_KEY_PATH,
+        "account":ACCOUNT,
+        "warehouse":WAREHOUSE,
+        "database":DATABASE,
+        "schema":SCHEMA,
+        "role":ROLE,
+        "host":HOST
+    }
+
+    session = Session.builder.configs(connection_parameters).create()
     if not conn.rest.token:
         print(">>>>>>>>>> Snowflake connection unsuccessful!")
 
@@ -287,10 +306,43 @@ def init():
         RSA_PRIVATE_KEY_PATH)
 
     print(">>>>>>>>>> Init complete")
-    return conn,jwt,cortex_app
+    return conn,session,jwt,cortex_app
+
+def vectorize_answer(question):
+    # Vectorize the answer using the Snowflake function
+    answer = 'There is no answer to this question'
+    citations = ''
+    SESSION.use_role("SYSADMIN")
+    df = SESSION.table('DASH_DB.DASH_SCHEMA.VECTORIZED_PDFS')
+    vector_search = df.with_column('QUESTION',F.lit(question))
+    vector_search = vector_search.with_column('EMBEDQ',F.call_function('SNOWFLAKE.CORTEX.EMBED_TEXT_768',
+                                                    F.lit('snowflake-arctic-embed-m'),
+                                                    F.col('QUESTION'))).cache_result()
+    vector_similar = vector_search.with_column('search',F.call_function('VECTOR_COSINE_SIMILARITY'
+                                           ,F.col('EMBED'),
+                                          F.col('EMBEDQ')))
+
+    vector_similar = vector_similar.sort(F.col('SEARCH').desc()).limit(3).cache_result()
+
+    citations = vector_similar.select_expr("LISTAGG(TITLE, ';') AS ALL_TITLES").collect()[0]["ALL_TITLES"]
+
+    vector_similar.select('OBJECT','QUESTION')
+    ### link to the different llm functions and what region supports them - https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions
+
+    vector_relevent = vector_similar.select(F.array_agg('OBJECT').alias('OBJECT'))
+
+    answer = vector_relevent.with_column('ANSWER',
+                                    F.call_function('SNOWFLAKE.CORTEX.COMPLETE',F.lit('mistral-7b'),
+                                                   F.concat(F.lit(question),
+                                                           F.lit(' Based on the following data: '),
+                                                           F.col('OBJECT').astype(StringType()),
+                                                           F.lit('Only provide the answer in markdown format '),
+                                                           F.lit('Do not provide additional commentary'))))
+
+    return {"sql": "", "text": str(answer.select('ANSWER').limit(1).collect()[0]["ANSWER"]), "citations": citations}
 
 # Start app
 if __name__ == "__main__":
-    CONN,JWT,CORTEX_APP = init()
+    CONN,SESSION, JWT,CORTEX_APP = init()
     Root = Root(CONN)
     SocketModeHandler(app, SLACK_APP_TOKEN).start()
