@@ -9,17 +9,11 @@ This project implements a sophisticated **Retrieval-Augmented Generation (RAG)**
 **Key Features:**
 - 🧠 **Intelligent Question Routing**: Automatically detects general knowledge vs document-specific questions
 - 🔍 **Document Search (RAG)**: Query PDF documents using vector similarity search with 1024-dimensional embeddings
-<<<<<<< HEAD
 - 📊 **Enhanced Data Analytics**: Generate SQL queries and intelligent visualizations from natural language
 - 🧮 **Analytical Processing**: Calculates specific numbers, percentages, and insights rather than just citing documents
 - 💬 **Smart Chart Generation**: Automatically selects optimal chart types (pie, bar, grouped bar) based on data characteristics
 - 💬 **Slack Integration**: Conversational AI interface with rich message formatting
 - 🎯 **Chart Recommendation**: AI detects when visualizations would be helpful and suggests appropriate chart types
-=======
-- 📊 **Data Analytics**: Generate SQL queries and visualizations from natural language
-- 💬 **Slack Integration**: Conversational AI interface with rich message formatting
-- 📈 **Chart Generation**: Automatic visualization of query results
->>>>>>> parent of 9aa8d72 (Update README)
 - 🔐 **Secure Authentication**: JWT-based authentication with automatic token renewal
 - ⚡ **Hybrid Intelligence**: Seamlessly switches between document-based and general knowledge responses
 
