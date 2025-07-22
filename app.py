@@ -313,6 +313,15 @@ def vectorize_answer(question):
     answer = 'There is no answer to this question'
     citations = ''
     SESSION.use_role("SYSADMIN")
+    
+    # First, check if this is a general knowledge question that doesn't need document context
+    if is_general_question(question):
+        # Answer general questions directly without document context
+        general_answer = SESSION.sql(f"""
+            SELECT SNOWFLAKE.CORTEX.COMPLETE('claude-3-5-sonnet', '{question}') as ANSWER
+        """).collect()[0]["ANSWER"]
+        return {"sql": "", "text": str(general_answer), "citations": "General knowledge - no document citation needed"}
+    
     df = SESSION.table('DASH_DB.DASH_SCHEMA.VECTORIZED_PDFS')
     vector_search = df.with_column('QUESTION',F.lit(question))
     vector_search = vector_search.with_column('EMBEDQ',F.call_function('SNOWFLAKE.CORTEX.EMBED_TEXT_1024',
@@ -324,22 +333,64 @@ def vectorize_answer(question):
 
     vector_similar = vector_similar.sort(F.col('SEARCH').desc()).limit(3).cache_result()
 
+    # Check if the similarity score is too low (meaning the question is not related to documents)
+    top_similarity = vector_similar.select(F.col('SEARCH')).limit(1).collect()[0]["SEARCH"]
+    
+    if top_similarity < 0.3:  # Low similarity threshold
+        # Question doesn't match document content well, answer as general knowledge
+        general_answer = SESSION.sql(f"""
+            SELECT SNOWFLAKE.CORTEX.COMPLETE('claude-3-5-sonnet', '{question}') as ANSWER
+        """).collect()[0]["ANSWER"]
+        return {"sql": "", "text": str(general_answer), "citations": "General knowledge - no document citation needed"}
+
     citations = vector_similar.select_expr("LISTAGG(TITLE, ';') AS ALL_TITLES").collect()[0]["ALL_TITLES"]
 
     vector_similar.select('OBJECT','QUESTION')
     ### link to the different llm functions and what region supports them - https://docs.snowflake.com/en/user-guide/snowflake-cortex/llm-functions
 
-    vector_relevent = vector_similar.select(F.array_agg('OBJECT').alias('OBJECT'))
+    # Limit the context size to avoid token limits - take first 5000 characters from each relevant document
+    vector_relevent = vector_similar.select(F.array_agg(F.substr(F.col('OBJECT'), 1, 5000)).alias('OBJECT'))
 
     answer = vector_relevent.with_column('ANSWER',
-                                    F.call_function('SNOWFLAKE.CORTEX.COMPLETE',F.lit('mistral-7b'),
-                                                   F.concat(F.lit(question),
-                                                           F.lit(' Based on the following data: '),
+                                    F.call_function('SNOWFLAKE.CORTEX.COMPLETE',F.lit('claude-3-5-sonnet'),
+                                                   F.concat(F.lit('Question: '), F.lit(question),
+                                                           F.lit('\n\nBased on the following document content, please answer the question. If the question cannot be answered from the provided documents, say so clearly:\n\n'),
                                                            F.col('OBJECT').astype(StringType()),
-                                                           F.lit('Only provide the answer in markdown format '),
-                                                           F.lit('Do not provide additional commentary'))))
+                                                           F.lit('\n\nAnswer:'))))
 
     return {"sql": "", "text": str(answer.select('ANSWER').limit(1).collect()[0]["ANSWER"]), "citations": citations}
+
+def is_general_question(question):
+    """Check if the question is a general knowledge question that doesn't require document context"""
+    question_lower = question.lower().strip()
+    
+    # Math patterns
+    math_patterns = [
+        r'\d+\s*[\+\-\*\/]\s*\d+',  # Simple math like "2+2", "10-5"
+        r'what\s+is\s+\d+',          # "what is 5+5"
+        r'calculate',                 # "calculate 10*3"
+        r'solve.*\d',                # "solve 15/3"
+    ]
+    
+    # General knowledge patterns
+    general_patterns = [
+        r'what\s+is\s+the\s+capital',    # "what is the capital of..."
+        r'who\s+is',                      # "who is..."
+        r'when\s+was',                    # "when was..."
+        r'how\s+many\s+days',             # "how many days in a year"
+        r'what\s+year',                   # "what year..."
+        r'define\s+',                     # "define..."
+        r'meaning\s+of',                  # "meaning of..."
+    ]
+    
+    import re
+    all_patterns = math_patterns + general_patterns
+    
+    for pattern in all_patterns:
+        if re.search(pattern, question_lower):
+            return True
+    
+    return False
 
 # Start app
 if __name__ == "__main__":
