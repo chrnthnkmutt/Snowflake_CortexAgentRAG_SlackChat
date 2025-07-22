@@ -5,6 +5,15 @@ create or replace table parse_pdfs as
 select relative_path, SNOWFLAKE.CORTEX.PARSE_DOCUMENT(@DASH_DB.DASH_SCHEMA.DASH_PDFS,relative_path,{'mode':'LAYOUT'}) as data
     from directory(@DASH_DB.DASH_SCHEMA.DASH_PDFS);
 
+-- Create a table for vectorized content from parsed PDFs
+create or replace table vectorized_pdfs as
+    select 
+        relative_path, 
+        REGEXP_REPLACE(relative_path, '\\.pdf$', '') as title,
+        TO_VARIANT(data):content as OBJECT,
+        SNOWFLAKE.CORTEX.EMBED_TEXT_1024('voyage-multilingual-2', TO_VARIANT(data):content) as EMBED
+    from parse_pdfs where TO_VARIANT(data):content is not null;
+
 create or replace table parsed_pdfs as (
     with tmp_parsed as (select
         relative_path,

@@ -3,7 +3,7 @@ import json
 import generate_jwt
 from generate_jwt import JWTGenerator
 
-DEBUG = False
+DEBUG = True
 
 class CortexChat:
     def __init__(self, 
