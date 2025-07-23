@@ -318,7 +318,14 @@ def vectorize_answer(question):
     if is_general_question(question):
         # Answer general questions directly without document context
         general_answer = SESSION.sql(f"""
-            SELECT SNOWFLAKE.CORTEX.COMPLETE('claude-3-5-sonnet', '{question}') as ANSWER
+            SELECT SNOWFLAKE.CORTEX.COMPLETE('claude-3-5-sonnet', 
+                'You are a helpful assistant. IMPORTANT: You MUST respond in the SAME LANGUAGE as the user\'s question. 
+                If the user asks in Thai, respond in Thai. If in English, respond in English. 
+                If in any other language, respond in that same language.
+                
+                User Question: {question}
+                
+                Please provide a helpful answer in the same language as the question above.') as ANSWER
         """).collect()[0]["ANSWER"]
         return {"sql": "", "text": str(general_answer), "citations": "General knowledge - no document citation needed"}
     
@@ -339,7 +346,14 @@ def vectorize_answer(question):
     if top_similarity < 0.3:  # Low similarity threshold
         # Question doesn't match document content well, answer as general knowledge
         general_answer = SESSION.sql(f"""
-            SELECT SNOWFLAKE.CORTEX.COMPLETE('claude-3-5-sonnet', '{question}') as ANSWER
+            SELECT SNOWFLAKE.CORTEX.COMPLETE('claude-3-5-sonnet', 
+                'You are a helpful assistant. IMPORTANT: You MUST respond in the SAME LANGUAGE as the user\'s question. 
+                If the user asks in Thai, respond in Thai. If in English, respond in English. 
+                If in any other language, respond in that same language.
+                
+                User Question: {question}
+                
+                Please provide a helpful answer in the same language as the question above.') as ANSWER
         """).collect()[0]["ANSWER"]
         return {"sql": "", "text": str(general_answer), "citations": "General knowledge - no document citation needed"}
 
@@ -353,10 +367,24 @@ def vectorize_answer(question):
 
     answer = vector_relevent.with_column('ANSWER',
                                     F.call_function('SNOWFLAKE.CORTEX.COMPLETE',F.lit('claude-3-5-sonnet'),
-                                                   F.concat(F.lit('Question: '), F.lit(question),
-                                                           F.lit('\n\nBased on the following document content, please answer the question. If the question cannot be answered from the provided documents, say so clearly:\n\n'),
-                                                           F.col('OBJECT').astype(StringType()),
-                                                           F.lit('\n\nAnswer:'))))
+                                                   F.concat(
+    F.lit('You are a helpful business analyst assistant with access to company documents. '),
+    F.lit('IMPORTANT: You MUST respond in the SAME LANGUAGE as the user\'s question. '),
+    F.lit('If the user asks in Thai, respond in Thai. If in English, respond in English. '),
+    F.lit('If in any other language, respond in that same language.\n\n'),
+    F.lit('User Question: '), F.lit(question),
+    F.lit('\n\nInstructions:\n'),
+    F.lit('- Answer the question based ONLY on the provided document content\n'),
+    F.lit('- RESPOND IN THE SAME LANGUAGE as the user\'s question\n'),
+    F.lit('- If the documents don\'t contain enough information, explicitly state what\'s missing\n'),
+    F.lit('- Provide specific quotes or references from the documents when possible\n'),
+    F.lit('- Structure your response clearly with key points\n'),
+    F.lit('- If multiple documents are relevant, synthesize the information\n'),
+    F.lit('- Maintain professional tone while matching the user\'s language\n\n'),
+    F.lit('Document Content:\n'),
+    F.col('OBJECT').astype(StringType()),
+    F.lit('\n\nBased on the above documents, here is my response (in the same language as the question):\n')
+)))
 
     return {"sql": "", "text": str(answer.select('ANSWER').limit(1).collect()[0]["ANSWER"]), "citations": citations}
 
