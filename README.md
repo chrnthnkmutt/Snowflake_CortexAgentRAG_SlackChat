@@ -1,37 +1,60 @@
-# 🚀 Snowflake Cortex Agents Slack RAG Project
+# 🚀 Snowflake Cortex Agent RAG Slack Chat
 
 ## 📋 Overview
 
-This project implements a sophisticated **Retrieval-Augmented Generation (RAG)** system using Snowflake Cortex Agents integrated with Slack. It combines intelligent question routing, vector similarity search, and accurate data analytics to provide AI-powered interactions through a conversational interface.
+This project implements an intelligent **Retrieval-Augmented Generation (RAG)** system powered by Snowflake Cortex AI and integrated with Slack for conversational interactions. The system combines advanced vector search, intelligent question routing, data analytics, and visualization capabilities to deliver AI-powered assistance through a seamless chat interface.
 
-**Recommend reading the step-by-step project guide here: [Original QuickStart Guide](https://quickstarts.snowflake.com/guide/integrate_snowflake_cortex_agents_with_slack/index.html)**
+**📚 Based on Snowflake QuickStart: [Integrate Snowflake Cortex Agents with Slack](https://quickstarts.snowflake.com/guide/integrate_snowflake_cortex_agents_with_slack/index.html)**
 
-**Key Features:**
-- 🧠 **Intelligent Question Routing**: Automatically detects general knowledge vs document-specific questions
-- 🔍 **Document Search (RAG)**: Query PDF documents using vector similarity search with 1024-dimensional embeddings
-- 📊 **Enhanced Data Analytics**: Generate SQL queries and intelligent visualizations from natural language
-- 🧮 **Analytical Processing**: Calculates specific numbers, percentages, and insights rather than just citing documents
-- 💬 **Smart Chart Generation**: Automatically selects optimal chart types (pie, bar, grouped bar) based on data characteristics
-- 💬 **Slack Integration**: Conversational AI interface with rich message formatting
-- 🎯 **Chart Recommendation**: AI detects when visualizations would be helpful and suggests appropriate chart types
-- 🔐 **Secure Authentication**: JWT-based authentication with automatic token renewal
-- ⚡ **Hybrid Intelligence**: Seamlessly switches between document-based and general knowledge responses
+## ✨ Key Features
 
-## 🏗️ Architecture
+- 🧠 **Intelligent Question Routing**: Automatically classifies and routes questions between general knowledge, math calculations, and document-specific queries
+- 🔍 **Advanced Document RAG**: Vector similarity search across PDF documents using `voyage-multilingual-2` embeddings (1024 dimensions)
+- 📊 **Data Analytics & Visualization**: Natural language to SQL generation with automatic chart creation and Slack file uploads
+- 🧮 **Multi-Modal Intelligence**: Handles mathematical calculations, general knowledge, and business document queries seamlessly  
+- 💬 **Rich Slack Integration**: Interactive chat with formatted responses, file uploads, and error handling
+- 🎯 **Smart Visualization**: Auto-generates pie charts for analytical results with dynamic data visualization
+- 🔐 **Enterprise Security**: JWT-based authentication with RSA key pairs and automatic token management
+- ⚡ **Performance Optimized**: Similarity thresholds, token management, and efficient vector operations
+- 🌐 **Multilingual Support**: Supports multiple languages through advanced embedding models
 
-### Enhanced RAG Pipeline
+## 🏗️ Architecture Overview
+
+### System Architecture
 ```
-Question → Intelligent Router → [General Knowledge: Direct LLM] OR [Document-Specific: PDF Documents → voyage-multilingual-2 → 1024D Vectors → Similarity Search (>0.3) → Retrieved Context → LLM Generation]
+Slack User Input
+       ↓
+Question Classification Engine
+       ↓
+┌─────────────────┬─────────────────┬─────────────────┐
+│  General/Math   │  Document RAG   │  Data Analytics │
+│     Queries     │    Queries      │    Queries      │
+└─────────────────┴─────────────────┴─────────────────┘
+       ↓                   ↓                   ↓
+Direct LLM Response    Vector Search      SQL Generation
+       ↓                   ↓                   ↓
+   Text Answer        PDF Context +       Tabular Data +
+                      Citations           Auto Charts
+       ↓                   ↓                   ↓
+           Formatted Slack Response
 ```
 
-### Components
-- **Embedding Model**: `voyage-multilingual-2` (1024 dimensions)
-- **LLM**: Claude-3.5-Sonnet (consistent across all responses)
-- **Vector Database**: Snowflake Cortex Search Service with custom vectorization
-- **Text Processing**: 1800-character chunks with 300-character overlap  
-- **Intelligent Routing**: Pattern-based detection for math, general knowledge, and document queries
-- **Similarity Threshold**: 0.3 minimum for document relevance
-- **Interface**: Slack Bot with Socket Mode
+### Core Components
+
+- **Embedding Model**: `voyage-multilingual-2` (1024-dimensional vectors)
+- **LLM Engine**: Claude-3.5-Sonnet (consistent across all response types)
+- **Vector Database**: Snowflake with VECTOR_COSINE_SIMILARITY search
+- **Text Processing**: 1800-character chunks with 300-character overlap
+- **Similarity Threshold**: 0.3 minimum for document relevance detection
+- **Interface**: Slack Bot with Socket Mode for real-time messaging
+- **Authentication**: JWT with RSA key pairs for enterprise security
+
+### Intelligent Routing Logic
+
+1. **Mathematical Queries**: Pattern detection for calculations → Direct computation
+2. **General Knowledge**: Low document similarity (<0.3) → Direct LLM response
+3. **Document-Specific**: High similarity (≥0.3) → RAG pipeline with citations
+4. **Analytics Queries**: Semantic model matching → SQL generation + visualization
 
 ## 🧠 Embedding Model Details
 
@@ -69,265 +92,509 @@ if top_similarity < 0.3:  # Smart fallback to general knowledge
 - **Context Window**: Optimized prompting to stay within Claude-3.5-Sonnet's limits
 - **Efficient Aggregation**: Smart text concatenation with proper formatting
 
-## 🎯 Current Status & Next Steps
+## 📈 Current Status & Development Roadmap
 
-### ✅ **Completed**
-- ✅ **Enhanced RAG Architecture**: Custom vectorization with voyage-multilingual-2 (1024D)
-- ✅ **Intelligent Question Routing**: Automatic detection of general vs document-specific queries
-- ✅ **Slack Bot Integration**: Socket Mode with rich message formatting
-- ✅ **JWT Authentication**: Secure authentication system
-- ✅ **PDF Document Processing**: Text chunking and vectorization
-- ✅ **Smart Similarity Filtering**: 0.3 threshold for document relevance
-- ✅ **Consistent Model Usage**: Claude-3.5-Sonnet across all LLM calls
-- ✅ **Token Optimization**: 5K character limits to prevent overflow
-- ✅ **Chart Generation**: Automatic visualization of query results
+### ✅ Completed Features
 
-### 🚀 **Priority Next Steps**
+#### Core Functionality
+- ✅ **Advanced RAG Architecture**: Custom vectorization with voyage-multilingual-2 (1024D embeddings)
+- ✅ **Intelligent Question Routing**: Automatic classification for math, general knowledge, and document queries
+- ✅ **Slack Bot Integration**: Socket Mode with rich message formatting and file uploads
+- ✅ **Enterprise Security**: JWT authentication with RSA key pairs and automatic token renewal
+- ✅ **Document Processing**: PDF parsing, chunking, and vectorization pipeline
+- ✅ **Smart Similarity Filtering**: 0.3 threshold with graceful fallback mechanisms
+- ✅ **Consistent LLM Usage**: Claude-3.5-Sonnet across all response types
+- ✅ **Performance Optimization**: Token management and efficient vector operations
 
-#### **🔧 1. Setup & Deployment (High Priority)**
-- [ ] **Complete environment setup**
-  - Upload PDF documents to `@DASH_DB.DASH_SCHEMA.DASH_PDFS` stage
-  - Upload semantic model to `@DASH_DB.DASH_SCHEMA.DASH_SEMANTIC_MODELS` stage
-  - Run `setup.sql` to create infrastructure
-  - Run `cortex_search_service.sql` to build search service with voyage-multilingual-2
+#### User Experience
+- ✅ **Multi-Modal Responses**: Text, data tables, charts, and citations
+- ✅ **Chart Generation**: Automatic pie chart creation with Slack file upload
+- ✅ **Error Handling**: Comprehensive exception handling with user-friendly messages
+- ✅ **Real-Time Processing**: Live chat responses with processing indicators
 
-- [ ] **Test enhanced functionality**
-  - Test mathematical queries: `"What is 2+2?"` (should return 4 directly)
-  - Test general knowledge: `"What is the capital of France?"` (should return Paris)
-  - Test document queries: `"What are the contract terms?"` (should search PDFs)
-  - Verify similarity threshold works for unrelated queries
+### 🚀 Priority Development Areas
 
-#### **🐛 2. Optimize Current Implementation (Medium Priority)**
-- [ ] **Fine-tune similarity threshold**: Test 0.2, 0.3, 0.4 thresholds for optimal routing
-- [ ] **Expand general knowledge patterns**: Add more regex patterns for better detection
-- [ ] **Performance optimization**: Cache embeddings for common queries
-- [ ] **Error handling**: Improve robustness for edge cases
+#### **1. Infrastructure & Deployment (High Priority)**
+- [ ] **Complete Production Setup**
+  - [ ] Finalize PDF document upload to Snowflake stages
+  - [ ] Verify semantic model configuration and testing
+  - [ ] Production environment variable validation
+  - [ ] End-to-end system testing with real data
 
-#### **✨ 3. Feature Enhancements (Medium Priority)**
-- [ ] **Conversation Memory**: Add context awareness across messages
-- [ ] **Advanced Analytics**: Support complex multi-step queries
-- [ ] **Custom Visualizations**: Expand beyond pie charts
-- [ ] **Real-time Learning**: Adapt similarity thresholds based on user feedback
+- [ ] **Performance Monitoring**
+  - [ ] Response time tracking and optimization
+  - [ ] Token usage monitoring and cost analysis
+  - [ ] Error rate tracking and alerting
+  - [ ] Vector search performance metrics
 
-## 🛠️ Quick Start
+#### **2. Feature Enhancements (Medium Priority)**
+- [ ] **Expanded Visualization Support**
+  - [ ] Bar charts, line graphs, and scatter plots
+  - [ ] Multi-series data visualization
+  - [ ] Interactive chart options
+  - [ ] Chart type recommendation engine
+
+- [ ] **Advanced Analytics**
+  - [ ] Multi-step query processing
+  - [ ] Complex aggregations and calculations
+  - [ ] Trend analysis and forecasting
+  - [ ] Comparative analytics across time periods
+
+#### **3. User Experience Improvements (Medium Priority)**
+- [ ] **Conversation Memory**
+  - [ ] Context awareness across message sessions
+  - [ ] Follow-up question handling
+  - [ ] Previous query reference capabilities
+  - [ ] Session state management
+
+- [ ] **Enhanced Interaction**
+  - [ ] Interactive buttons and menus in Slack
+  - [ ] Query suggestion and auto-completion
+  - [ ] User preference learning
+  - [ ] Feedback collection and processing
+
+#### **4. Advanced Intelligence (Future)**
+- [ ] **Dynamic Learning**
+  - [ ] Adaptive similarity threshold tuning
+  - [ ] User feedback integration for model improvement
+  - [ ] Query pattern analysis and optimization
+  - [ ] Custom embedding fine-tuning
+
+- [ ] **Multi-Source Integration**
+  - [ ] Additional document formats (Word, Excel, PowerPoint)
+  - [ ] Database table integration beyond semantic model
+  - [ ] Real-time data source connections
+  - [ ] External API integration capabilities
+
+## � Quick Start Guide
 
 ### Prerequisites
-- Snowflake account with Cortex features enabled
-- Slack workspace and app tokens
-- Python 3.8+
+- ✅ Snowflake account with Cortex AI features enabled
+- ✅ Slack workspace with bot application created
+- ✅ Python 3.8+ environment
+- ✅ PDF documents for RAG (stored in `data/` folder)
 
-### Installation
+### 1. Environment Setup
 ```bash
-# 1. Clone the repository
-git clone <repository-url>
-cd cortext-agent-slack-chat-RAG
+# Clone the repository
+git clone <your-repository-url>
+cd Snowflake_CortexAgentRAG_SlackChat
 
-# 2. Install dependencies
+# Install Python dependencies
 pip install -r requirements.txt
 
-# 3. Set up environment variables
+# Set up environment variables
 cp .env.example .env
-# Edit .env with your credentials
+# Edit .env with your Snowflake and Slack credentials
+```
 
-# 4. Set up Snowflake infrastructure
-snowsql -f setup.sql
-snowsql -f cortex_search_service.sql
+### 2. Snowflake Infrastructure Setup
+```bash
+# Execute SQL setup files in order:
+# 1. Run setup.sql in Snowflake SQL worksheet
+# 2. Upload PDFs to @DASH_DB.DASH_SCHEMA.DASH_PDFS stage
+# 3. Upload semantic model to @DASH_DB.DASH_SCHEMA.DASH_SEMANTIC_MODELS stage  
+# 4. Run cortex_search_service.sql to create vector search service
+```
 
-# 5. Test the connection
+### 3. Configuration & Testing
+```bash
+# Test Snowflake connection
 python test.py
 
-# 6. Run the Slack bot
+# Verify Slack bot tokens
+# Check SLACK_APP_TOKEN and SLACK_BOT_TOKEN in .env
+
+# Run the application
 python app.py
 ```
 
-### Environment Variables
-```bash
-DEMO_DATABASE='DASH_DB'
-DEMO_SCHEMA='DASH_SCHEMA'
-WAREHOUSE='DASH_S'
-DEMO_USER='your_username'
-DEMO_USER_ROLE='ACCOUNTADMIN'
-SEMANTIC_MODEL='@DASH_DB.DASH_SCHEMA.DASH_SEMANTIC_MODELS/support_tickets_semantic_model.yaml'
-SEARCH_SERVICE='DASH_DB.DASH_SCHEMA.vehicles_info'
-ACCOUNT='your_account_identifier'
-HOST='your_account.snowflakecomputing.com'
-AGENT_ENDPOINT='https://your_account.snowflakecomputing.com/api/v2/cortex/agent:run'
-SLACK_APP_TOKEN="xapp-your-app-token"
-SLACK_BOT_TOKEN="xoxb-your-bot-token"
-RSA_PRIVATE_KEY_PATH='rsa_key.p8'
-MODEL='claude-3-5-sonnet'
+### 4. Required Environment Variables
+```env
+# Snowflake Configuration
+ACCOUNT=your_account_identifier
+HOST=your_account.snowflakecomputing.com
+DEMO_USER=your_username
+DEMO_USER_ROLE=ACCOUNTADMIN
+DEMO_DATABASE=DASH_DB
+DEMO_SCHEMA=DASH_SCHEMA
+WAREHOUSE=DASH_S
+
+# Slack Configuration  
+SLACK_APP_TOKEN=xapp-your-app-token
+SLACK_BOT_TOKEN=xoxb-your-bot-token
+
+# Cortex AI Configuration
+AGENT_ENDPOINT=https://your_account.snowflakecomputing.com/api/v2/cortex/agent:run
+SEMANTIC_MODEL=@DASH_DB.DASH_SCHEMA.DASH_SEMANTIC_MODELS/support_tickets_semantic_model.yaml
+SEARCH_SERVICE=DASH_DB.DASH_SCHEMA.vehicles_info
+MODEL=claude-3-5-sonnet
+
+# Security
+RSA_PRIVATE_KEY_PATH=rsa_key.p8
 ```
 
 ## 📁 Project Structure
 
 ```
-├── app.py                          # Main Slack bot application
-├── cortex_chat.py                  # Cortex Agents API client
-├── generate_jwt.py                 # JWT token generation
-├── setup.sql                       # Snowflake infrastructure setup
-├── cortex_search_service.sql       # Search service creation
-├── support_tickets_semantic_model.yaml  # Semantic model definition
-├── test.py                         # API connection testing
-├── requirements.txt                # Python dependencies
-├── .env                           # Environment variables
-├── data/                          # PDF documents for RAG
-└── README.md                      # This file
+Snowflake_CortexAgentRAG_SlackChat/
+├── 📄 app.py                                    # Main Slack bot application with RAG logic
+├── 📄 cortex_chat.py                           # Cortex Agent API client and communication
+├── 📄 generate_jwt.py                          # JWT token generation for authentication
+├── 📄 test.py                                  # Connection and API testing utilities
+├── 📄 cleanup_files.py                         # File cleanup utilities
+├── 📄 requirements.txt                         # Python dependencies
+├── 📄 support_tickets_semantic_model.yaml     # Semantic model for data analytics
+├── 📄 .env                                     # Environment variables (create from template)
+├── 🔐 rsa_key.p8                              # RSA private key for JWT authentication
+├── 🔐 rsa_key.pub                             # RSA public key
+├── 📄 slack_bot.sh                            # Deployment script for bot
+├── 📊 pie_chart.jpg                           # Sample chart output
+├── 📄 README.md                               # This documentation
+├── 📄 LICENSE                                 # Project license
+├── 
+├── 📂 data/                                   # PDF documents for RAG
+│   ├── City_Motors_Dealership_Contract.pdf
+│   ├── DataTires_Contract_Detailed.pdf  
+│   ├── Metro_Auto_Dealership_Contract.pdf
+│   ├── RubberWorks_Contract_Detailed.pdf
+│   ├── Snowtires_Automotive_Contract_with_Appendix.pdf
+│   └── Snowtires_Automotive_ESG_Recycling_Policy_Full.pdf
+│
+├── 📂 snowflake_cortexai_sql/                # Snowflake setup and configuration
+│   ├── setup.sql                             # Database and schema creation
+│   ├── cortex_search_service.sql             # Vector search service setup
+│   ├── check_embedding_dimensions.sql        # Embedding validation queries
+│   └── README.md                             # SQL setup instructions
+│
+├── 📂 snowflake_cleanup_oldfiles/            # Maintenance utilities
+│   ├── cleanup_old_files.sql                # File cleanup procedures
+│   ├── quick_check_orphaned_files.sql       # Orphaned file detection
+│   └── README.md                             # Cleanup documentation
+│
+└── 📂 __pycache__/                           # Python bytecode cache
+    ├── cortex_chat.cpython-312.pyc
+    └── generate_jwt.cpython-312.pyc
 ```
 
-## 🎮 Usage Examples
+## 💬 Usage Examples & Testing
 
-### Mathematical & General Knowledge Queries
+### 1. Mathematical & Computational Queries
 ```
-"What is 2+2?"                          → Direct response: "4"
-"Calculate 15 * 8"                      → Direct response: "120"
-"What is the capital of France?"        → Direct response: "Paris"
-"Who invented the telephone?"           → Direct response: Historical information
-```
+User: "What is 2+2?"
+Bot: "4"
 
-### Document-Specific Queries (RAG)
-```
-"What are the terms in the DataTires contract?"          → Searches PDFs, returns relevant sections
-"Summarize the ESG policy from Snowtires Automotive"    → Vector search + document analysis
-"What recycling procedures are mentioned?"              → PDF content with citations
+User: "Calculate 15 * 8"  
+Bot: "120"
+
+User: "Solve 144 / 12"
+Bot: "12"
 ```
 
-### Smart Routing Examples
+### 2. General Knowledge Questions
 ```
-"Tell me about Python programming"       → General knowledge (low similarity to business docs)
-"What are our payment terms?"           → Document search (high similarity to contracts)
-"Compare machine learning models"       → General knowledge (no relevant business docs)
-```
+User: "What is the capital of France?"
+Bot: "Paris"
 
-### Data Analytics (SQL Generation)
-```
-"Show me a breakdown of support tickets by service type"
-"How many customers prefer email contact?"
-"Create a chart of customer distribution"
+User: "Who invented the telephone?"
+Bot: "Alexander Graham Bell invented the telephone in 1876..."
+
+User: "Explain machine learning"
+Bot: "Machine learning is a subset of artificial intelligence..."
 ```
 
-## 🔧 Development
+### 3. Document-Specific RAG Queries
+```
+User: "What are the terms in the DataTires contract?"
+Bot: [Searches PDF documents, returns relevant contract sections with citations]
 
-### Key Components
+User: "Summarize the ESG policy from Snowtires Automotive"
+Bot: [Vector search results with document excerpts and source citations]
 
-#### **Enhanced Vectorize Answer Function** (`app.py`)
-- **Intelligent Question Routing**: Automatically detects math, general knowledge, and document queries
-- **Custom Vector Search**: Uses voyage-multilingual-2 with 1024-dimensional embeddings
-- **Similarity Threshold**: 0.3 minimum for document relevance detection
-- **Token Management**: 5,000 character limit per document to prevent overflow
-- **Consistent LLM**: Claude-3.5-Sonnet for all text generation
+User: "What recycling procedures are mentioned in our policies?"
+Bot: [Relevant policy content with document references]
+```
 
-#### **CortexChat Class** (`cortex_chat.py`)
-- Handles Cortex Agents API communication (alternative approach)
-- Manages JWT authentication with automatic renewal
-- Processes streaming responses (SSE)
-- Parses tool results and citations
+### 4. Data Analytics & SQL Generation
+```
+User: "Show me a breakdown of support tickets by service type"
+Bot: [Generates SQL query, executes it, returns table + pie chart]
 
-#### **Slack Bot** (`app.py`)
-- Socket Mode integration for real-time messaging
-- Rich message formatting with blocks
-- Chart generation and file upload
-- Comprehensive error handling and user feedback
+User: "How many customers prefer email contact?"
+Bot: [SQL analysis with numerical results and visualization]
 
-#### **Custom Vector Search** (`cortex_search_service.sql`)
-- PDF document parsing and chunking
-- **Updated**: Vector embedding with voyage-multilingual-2 (1024D)
-- Enhanced similarity search with threshold filtering
+User: "Create a chart of customer distribution by region"
+Bot: [Data table with automatically generated chart uploaded to Slack]
+```
 
-### Testing
+### 5. Smart Question Routing Examples
+```
+User: "Tell me about Python programming"
+Response: General knowledge (low similarity to business documents)
+
+User: "What are our payment terms with suppliers?"
+Response: Document search (high similarity to contract PDFs)
+
+User: "Compare different database technologies"
+Response: General knowledge (no relevant business context)
+
+User: "Show customer satisfaction metrics"
+Response: SQL generation (matches semantic model dimensions)
+```
+
+## 🔧 Technical Implementation Details
+
+### Enhanced Vector Search Pipeline
+
+#### Embedding Model: voyage-multilingual-2
+- **Dimensions**: 1024 (high-quality semantic representation)
+- **Provider**: Snowflake Cortex (`SNOWFLAKE.CORTEX.EMBED_TEXT_1024`)
+- **Type**: Multilingual embedding optimized for retrieval tasks
+- **Implementation**: Custom vectorization in `vectorize_answer()` function
+
+#### Intelligent Question Classification
+```python
+def is_general_question(question):
+    """Automatic classification logic"""
+    # Mathematical patterns: "2+2", "calculate 10*5", "solve 15/3"
+    # General knowledge: "capital of France", "who invented...", "define..."
+    # Business queries: High similarity (≥0.3) to document vectors
+    # Fallback: Low similarity (<0.3) → General knowledge mode
+```
+
+#### Vector Similarity Processing
+```python
+# Custom vectorization with voyage-multilingual-2
+vector_search.with_column('EMBEDQ', 
+    F.call_function('SNOWFLAKE.CORTEX.EMBED_TEXT_1024', 
+                   F.lit('voyage-multilingual-2'), 
+                   F.col('QUESTION')))
+
+# Similarity threshold with smart fallback
+if top_similarity < 0.3:
+    return direct_llm_response(question)  # General knowledge
+else:
+    return rag_response_with_citations(question)  # Document search
+```
+
+### Performance Optimizations
+
+#### Token Management Strategy
+- **Document Chunks**: 5,000 characters per document (prevents token overflow)
+- **Context Window**: Optimized for Claude-3.5-Sonnet limits  
+- **Aggregation**: Smart text concatenation with proper formatting
+- **Graceful Degradation**: Automatic fallback handling for large documents
+
+#### Caching & Efficiency
+- **Embedding Caching**: `.cache_result()` for repeated vector operations
+- **Session Management**: Persistent Snowflake connections
+- **Memory Optimization**: Efficient DataFrame operations with Snowpark
+
+### Security & Authentication
+
+#### JWT Implementation
+```python
+# RSA-based JWT with automatic renewal
+jwt_generator = JWTGenerator(account, user, private_key_path)
+token = jwt_generator.get_token()
+
+# Secure API communication
+headers = {
+    'X-Snowflake-Authorization-Token-Type': 'KEYPAIR_JWT',
+    'Authorization': f'Bearer {token}'
+}
+```
+
+#### Data Privacy
+- **Encrypted Communication**: All API calls use HTTPS/TLS
+- **Key Management**: RSA private keys for authentication  
+- **Access Control**: Role-based permissions in Snowflake
+- **Token Expiration**: Automatic JWT renewal handling
+
+## 🧪 Testing & Validation
+
+### Automated Testing Suite
 ```bash
-# Test Cortex Agents API
+# Primary connection test
 python test.py
 
-# Test individual components
-python -c "from cortex_chat import CortexChat; print('Import successful')"
+# Component validation
+python -c "from cortex_chat import CortexChat; print('✅ Cortex Chat import successful')"
+python -c "from generate_jwt import JWTGenerator; print('✅ JWT Generator import successful')"
 
-# Debug mode
-# Set DEBUG = True in cortex_chat.py for detailed logging
+# Environment validation
+python -c "import os; from dotenv import load_dotenv; load_dotenv(); print('✅ Environment loaded')"
 ```
 
-## 📊 Technical Details
+### Manual Testing Checklist
 
-### Enhanced Embedding Implementation
-- **Model**: voyage-multilingual-2 (via `SNOWFLAKE.CORTEX.EMBED_TEXT_1024`)
-- **Dimensions**: 1024 (upgraded from 768 for better semantic understanding)
-- **Implementation**: Custom vectorization in `vectorize_answer()` function
-- **Optimization**: High-quality retrieval with multilingual support
+#### **1. Question Routing Validation**
+```bash
+# Mathematical queries (should bypass document search)
+Test: "What is 5 + 3?"
+Expected: Direct response "8"
 
-### Intelligent Question Classification
+Test: "Calculate 144 / 12"  
+Expected: Direct response "12"
+
+# General knowledge (should bypass document search)
+Test: "What is the capital of Japan?"
+Expected: Direct response "Tokyo"
+
+Test: "Who invented the lightbulb?"
+Expected: Historical information about Edison
+```
+
+#### **2. Document RAG Testing**
+```bash
+# Business document queries (should search PDFs)
+Test: "What are our contract terms with DataTires?"
+Expected: PDF content with citations
+
+Test: "Summarize the ESG recycling policy"
+Expected: Policy excerpts with document sources
+
+# Similarity threshold testing
+Test: "Explain quantum computing principles"
+Expected: Fallback to general knowledge (low similarity to business docs)
+```
+
+#### **3. Data Analytics Validation**
+```bash
+# SQL generation and visualization
+Test: "Show me support ticket breakdown by service type"
+Expected: SQL execution + data table + pie chart
+
+Test: "How many customers prefer email contact?"
+Expected: Numerical analysis with potential visualization
+```
+
+### Performance Benchmarks
+
+#### **Response Time Targets**
+- Mathematical queries: < 2 seconds
+- General knowledge: < 3 seconds  
+- Document RAG: < 5 seconds
+- Data analytics with charts: < 8 seconds
+
+#### **Quality Metrics**
+- Vector similarity relevance: ≥ 0.3 for document matches
+- Citation accuracy: 100% (all document responses include sources)
+- Chart generation success: > 90% for suitable data
+- Error handling: Graceful degradation for all failure modes
+
+### Debug Mode
 ```python
-# Mathematical patterns: "2+2", "calculate 10*5"
-# General knowledge: "capital of France", "who invented..."
-# Document-specific: High similarity (>0.3) to PDF content
-# Fallback: Low similarity (<0.3) → General knowledge mode
+# Enable debugging in cortex_chat.py
+DEBUG = True
+
+# Enable debugging in app.py  
+DEBUG = True
+
+# Check detailed logs for:
+# - JWT token generation and renewal
+# - Vector similarity scores  
+# - API response parsing
+# - Slack file upload processes
 ```
 
-### Smart Similarity Threshold
-- **Threshold**: 0.3 cosine similarity minimum for document relevance
-- **Above 0.3**: Uses RAG pipeline with PDF content and citations
-- **Below 0.3**: Falls back to general knowledge mode
-- **Benefits**: Prevents irrelevant document content from polluting responses
+## 🎉 Success Metrics & Validation
 
-### Token Optimization Strategy
-- **Document Chunks**: 5,000 characters per document (reduced from 10,000)
-- **Context Window**: Optimized prompting for Claude-3.5-Sonnet
-- **Aggregation**: Smart text concatenation with proper formatting
-- **Fallback**: Automatic token limit handling with graceful degradation
+### System Health Indicators
+**You'll know the system is working correctly when:**
 
-### Semantic Model
-- **6 Dimensions**: TICKET_ID, CUSTOMER_NAME, CUSTOMER_EMAIL, SERVICE_TYPE, REQUEST, CONTACT_PREFERENCE
-- **Verified Queries**: Pre-tested SQL patterns for common analytics
-- **Synonyms**: Multiple ways to reference each dimension
-
-### Performance Characteristics
-- **Chunk Size**: 1800 characters with 300 overlap
-- **Vector Comparison**: VECTOR_COSINE_SIMILARITY with 1024D vectors
-- **Response Types**: Direct LLM, RAG with citations, or SQL generation
-- **Target Lag**: 1 hour for search service updates
-
-## 🎉 Success Metrics
-
-**You'll know the enhanced system is working when:**
 - ✅ **Smart Routing**: Math questions like "2+2" return "4" instantly without searching documents
-- ✅ **General Knowledge**: Questions like "What is the capital of France?" return "Paris" directly
+- ✅ **General Knowledge**: Questions like "What is the capital of France?" return "Paris" directly  
 - ✅ **Document Search**: Business queries return relevant PDF content with proper citations
 - ✅ **Similarity Filtering**: Unrelated questions gracefully fall back to general knowledge mode
 - ✅ **No Token Errors**: System handles large documents without "max tokens exceeded" errors
 - ✅ **Consistent Quality**: All responses use Claude-3.5-Sonnet for consistent, high-quality output
-- ✅ **Slack Integration**: Rich message formatting with charts and error handling
+- ✅ **Slack Integration**: Rich message formatting with charts and comprehensive error handling
 - ✅ **Performance**: Fast responses due to intelligent routing and optimized token usage
 
-### Testing Checklist
+### Comprehensive Testing Matrix
 ```bash
-# Test mathematical queries
-"What is 5 + 3?"                    # Should return: 8
+# Mathematical Intelligence
+"What is 15 × 7?"                    → Expected: "105"
+"Calculate 256 ÷ 16"                 → Expected: "16"
 
-# Test general knowledge  
-"What is the capital of Japan?"     # Should return: Tokyo
+# General Knowledge Validation  
+"What is the capital of Australia?"  → Expected: "Canberra"
+"Who wrote Romeo and Juliet?"        → Expected: "William Shakespeare"
 
-# Test document-specific queries
-"What are our contract terms?"      # Should search PDFs and return relevant content
+# Document RAG Verification
+"What are our contract terms?"       → Expected: PDF content + citations
+"Summarize our ESG policies"         → Expected: Policy excerpts + sources
 
-# Test similarity threshold
-"Explain quantum physics"           # Should fall back to general knowledge (low similarity)
+# Analytics & Visualization
+"Show customer distribution"         → Expected: SQL + data table + chart
+"Breakdown support tickets"          → Expected: Analysis + visualization
 
-# Test data analytics
-"Show support ticket breakdown"     # Should generate SQL and charts
+# Edge Case Handling
+"Explain nuclear fusion"            → Expected: General knowledge (low document similarity)
+"What's our quantum computing policy?" → Expected: Fallback or "not found" message
 ```
 
-## 📚 Resources
+## 📚 Resources & Documentation
 
-- [Snowflake Cortex Agents Documentation](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents)
-- [Slack Bolt Python Framework](https://slack.dev/bolt-python/tutorial/getting-started)
-- [Original QuickStart Guide](https://quickstarts.snowflake.com/guide/integrate_snowflake_cortex_agents_with_slack/index.html)
+### Official Documentation
+- 📖 [Snowflake Cortex AI Documentation](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-agents)
+- 🤖 [Slack Bolt Python Framework](https://slack.dev/bolt-python/tutorial/getting-started)
+- 🚀 [Original Snowflake QuickStart Guide](https://quickstarts.snowflake.com/guide/integrate_snowflake_cortex_agents_with_slack/index.html)
+- 🔧 [Snowpark Python Developer Guide](https://docs.snowflake.com/en/developer-guide/snowpark/python/index)
 
-## 🤝 Contributing
+### Additional Learning Resources
+- 🎯 [Vector Embeddings in Snowflake](https://docs.snowflake.com/en/user-guide/snowflake-cortex/vector-functions)
+- 📊 [Cortex Analyst for SQL Generation](https://docs.snowflake.com/en/user-guide/snowflake-cortex/cortex-analyst)
+- 🔐 [JWT Authentication with Snowflake](https://docs.snowflake.com/en/developer-guide/sql-api/authenticating)
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+## 🤝 Contributing & Development
 
-## 📄 License
+### Contribution Guidelines
+1. **Fork the repository** and create a feature branch
+2. **Follow existing code patterns** and documentation standards
+3. **Test thoroughly** using the provided testing checklist
+4. **Update documentation** for any new features or changes
+5. **Submit a pull request** with detailed description of changes
 
-This project is part of Snowflake Labs and follows the associated licensing terms.
+### Development Best Practices
+- Use type hints in Python code
+- Follow PEP 8 style guidelines
+- Add comprehensive error handling
+- Include docstrings for all functions
+- Test both success and failure scenarios
+
+### Common Issues & Solutions
+```bash
+# JWT Token Issues
+Solution: Verify RSA key format and account identifier
+
+# Vector Search Performance
+Solution: Check embedding dimensions and similarity thresholds
+
+# Slack File Upload Failures  
+Solution: Verify bot permissions and file size limits
+
+# SQL Generation Errors
+Solution: Validate semantic model configuration
+```
+
+## 📄 License & Acknowledgments
+
+### License Information
+This project is part of **Snowflake Labs** and follows the associated licensing terms. Please refer to the LICENSE file for complete details.
+
+### Acknowledgments
+- **Snowflake Labs** for the foundational QuickStart guide and Cortex AI platform
+- **Slack** for the robust Bolt framework and API ecosystem
+- **Anthropic** for the Claude-3.5-Sonnet language model
+- **Contributors** who have helped improve and extend this project
+
+### Project Maintainers
+For questions, issues, or contributions, please refer to the repository's issue tracker and contribution guidelines.
+
+---
+
+**⭐ Star this repository if you find it helpful!**
+
+**🚀 Ready to build intelligent conversational AI with Snowflake and Slack? Get started with the Quick Start Guide above!**
