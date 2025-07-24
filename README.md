@@ -1,4 +1,4 @@
-# 🚀 Snowflake Cortex Agent RAG Slack Chat
+# 🚀 Snowflake Cortex Agent RAG Slack Chat (Public Released Version)
 
 ## 📋 Overview
 
@@ -16,7 +16,8 @@ This project implements an intelligent **Retrieval-Augmented Generation (RAG)** 
 - 🎯 **Smart Visualization**: Auto-generates pie charts for analytical results with dynamic data visualization
 - 🔐 **Enterprise Security**: JWT-based authentication with RSA key pairs and automatic token management
 - ⚡ **Performance Optimized**: Similarity thresholds, token management, and efficient vector operations
-- 🌐 **Multilingual Support**: Supports multiple languages through advanced embedding models
+- 🌐 **Advanced Multilingual Support**: Intelligent language detection with automatic response matching across all query types
+- 📝 **Enhanced Prompting System**: Sophisticated prompt engineering for consistent, high-quality responses in multiple languages
 
 ## 🏗️ Architecture Overview
 
@@ -48,6 +49,7 @@ Direct LLM Response    Vector Search      SQL Generation
 - **Similarity Threshold**: 0.3 minimum for document relevance detection
 - **Interface**: Slack Bot with Socket Mode for real-time messaging
 - **Authentication**: JWT with RSA key pairs for enterprise security
+- **Language Intelligence**: Advanced multilingual prompting with automatic language detection and response matching
 
 ### Intelligent Routing Logic
 
@@ -55,6 +57,92 @@ Direct LLM Response    Vector Search      SQL Generation
 2. **General Knowledge**: Low document similarity (<0.3) → Direct LLM response
 3. **Document-Specific**: High similarity (≥0.3) → RAG pipeline with citations
 4. **Analytics Queries**: Semantic model matching → SQL generation + visualization
+
+## 🌐 Advanced Multilingual Intelligence
+
+### Intelligent Language Detection & Response Matching
+
+The system now features **sophisticated multilingual capabilities** that automatically detect the user's language and respond in the same language across all query types:
+
+#### **Key Multilingual Features:**
+- 🔤 **Automatic Language Detection**: Recognizes user's input language without explicit specification
+- 🗣️ **Response Language Matching**: AI responds in the exact same language as the user's question
+- 🌍 **Universal Language Support**: Works with Thai, English, Spanish, French, German, Chinese, Japanese, and many other languages
+- 📚 **Consistent Across Query Types**: Language matching works for document RAG, general knowledge, and data analytics
+- 🎯 **Professional Tone Preservation**: Maintains business-appropriate tone while matching user's language
+
+#### **Multilingual Query Examples:**
+
+**Thai Language Support:**
+```
+User: "บริษัทเรามีสัญญากับ DataTires ไหม?"
+Bot: [Responds in Thai with document search results]
+
+User: "แสดงตั๋วการสนับสนุนตามประเภทบริการ"
+Bot: [Thai response with data analytics and charts]
+
+User: "5+3 เท่ากับเท่าไร?"
+Bot: "5+3 เท่ากับ 8"
+```
+
+**English Language Support:**
+```
+User: "What contracts do we have with suppliers?"
+Bot: [English response with PDF search and citations]
+
+User: "Show me support tickets by service type"
+Bot: [English response with SQL data and visualization]
+
+User: "What is 2+2?"
+Bot: "2+2 equals 4"
+```
+
+**Spanish Language Support:**
+```
+User: "¿Cuáles son nuestros términos contractuales con proveedores?"
+Bot: [Spanish response with document analysis]
+
+User: "¿Cuánto es 10 × 7?"
+Bot: "10 × 7 es igual a 70"
+```
+
+#### **Enhanced Prompting Architecture:**
+
+The system uses **advanced prompt engineering** to ensure consistent multilingual responses:
+
+```python
+# Document RAG Multilingual Prompting
+prompt = """
+You are a helpful business analyst assistant with access to company documents.
+IMPORTANT: You MUST respond in the SAME LANGUAGE as the user's question.
+If the user asks in Thai, respond in Thai. If in English, respond in English.
+If in any other language, respond in that same language.
+
+User Question: {question}
+
+Instructions:
+- Answer based ONLY on the provided document content
+- RESPOND IN THE SAME LANGUAGE as the user's question
+- Maintain professional tone while matching the user's language
+- Provide specific quotes or references from documents when possible
+"""
+```
+
+#### **Multilingual Implementation Benefits:**
+
+✅ **Enhanced User Experience**: Users can interact in their preferred language  
+✅ **Global Accessibility**: Supports international teams and diverse workforces  
+✅ **Cultural Sensitivity**: Maintains appropriate tone and context for different languages  
+✅ **Consistent Quality**: Same high-quality responses regardless of input language  
+✅ **Business Intelligence**: Document search and analytics work seamlessly in any language  
+
+### Technical Implementation
+
+The multilingual system leverages:
+- **voyage-multilingual-2 embeddings**: Optimized for cross-language semantic understanding
+- **Claude-3.5-Sonnet**: Advanced language model with superior multilingual capabilities
+- **Intelligent prompt design**: Language-aware prompting across all response pathways
+- **Consistent fallback handling**: Multilingual support even for edge cases and error scenarios
 
 ## 🧠 Embedding Model Details
 
@@ -99,6 +187,8 @@ if top_similarity < 0.3:  # Smart fallback to general knowledge
 #### Core Functionality
 - ✅ **Advanced RAG Architecture**: Custom vectorization with voyage-multilingual-2 (1024D embeddings)
 - ✅ **Intelligent Question Routing**: Automatic classification for math, general knowledge, and document queries
+- ✅ **Advanced Multilingual Intelligence**: Automatic language detection with response matching across all query types
+- ✅ **Enhanced Prompting System**: Sophisticated prompt engineering for consistent, high-quality multilingual responses
 - ✅ **Slack Bot Integration**: Socket Mode with rich message formatting and file uploads
 - ✅ **Enterprise Security**: JWT authentication with RSA key pairs and automatic token renewal
 - ✅ **Document Processing**: PDF parsing, chunking, and vectorization pipeline
@@ -279,7 +369,9 @@ Snowflake_CortexAgentRAG_SlackChat/
 
 ## 💬 Usage Examples & Testing
 
-### 1. Mathematical & Computational Queries
+### 1. Mathematical & Computational Queries (Multilingual)
+
+**English:**
 ```
 User: "What is 2+2?"
 Bot: "4"
@@ -291,43 +383,102 @@ User: "Solve 144 / 12"
 Bot: "12"
 ```
 
-### 2. General Knowledge Questions
+**Thai:**
+```
+User: "5+3 เท่ากับเท่าไร?"
+Bot: "5+3 เท่ากับ 8"
+
+User: "คำนวณ 12 × 4"
+Bot: "12 × 4 เท่ากับ 48"
+```
+
+**Spanish:**
+```
+User: "¿Cuánto es 10 × 7?"
+Bot: "10 × 7 es igual a 70"
+```
+
+### 2. General Knowledge Questions (Multilingual)
+
+**English:**
 ```
 User: "What is the capital of France?"
 Bot: "Paris"
 
 User: "Who invented the telephone?"
 Bot: "Alexander Graham Bell invented the telephone in 1876..."
+```
 
+**Thai:**
+```
+User: "เมืองหลวงของประเทศญี่ปุ่นคือที่ไหน?"
+Bot: "เมืองหลวงของประเทศญี่ปุ่นคือ โตเกียว (Tokyo)"
+```
+
+**Spanish:**
+```
+User: "¿Quién inventó la bombilla eléctrica?"
+Bot: "Thomas Edison inventó la bombilla eléctrica en 1879..."
+```
 User: "Explain machine learning"
 Bot: "Machine learning is a subset of artificial intelligence..."
 ```
 
-### 3. Document-Specific RAG Queries
+### 3. Document-Specific RAG Queries (Multilingual)
+
+**English:**
 ```
 User: "What are the terms in the DataTires contract?"
 Bot: [Searches PDF documents, returns relevant contract sections with citations]
 
 User: "Summarize the ESG policy from Snowtires Automotive"
 Bot: [Vector search results with document excerpts and source citations]
-
-User: "What recycling procedures are mentioned in our policies?"
-Bot: [Relevant policy content with document references]
 ```
 
-### 4. Data Analytics & SQL Generation
+**Thai:**
+```
+User: "บริษัทเรามีสัญญากับ DataTires ไหม?"
+Bot: [ค้นหาเอกสาร PDF และตอบกลับเป็นภาษาไทยพร้อมอ้างอิง]
+
+User: "สรุปนโยบาย ESG ของ Snowtires Automotive"
+Bot: [ผลการค้นหาเวกเตอร์เป็นภาษาไทยพร้อมเนื้อหาและแหล่งอ้างอิง]
+```
+
+**Spanish:**
+```
+User: "¿Cuáles son los términos del contrato con DataTires?"
+Bot: [Búsqueda en documentos PDF, devuelve secciones relevantes del contrato con citas]
+```
+
+### 4. Data Analytics & SQL Generation (Multilingual)
+
+**English:**
 ```
 User: "Show me a breakdown of support tickets by service type"
 Bot: [Generates SQL query, executes it, returns table + pie chart]
 
 User: "How many customers prefer email contact?"
 Bot: [SQL analysis with numerical results and visualization]
-
-User: "Create a chart of customer distribution by region"
-Bot: [Data table with automatically generated chart uploaded to Slack]
 ```
 
-### 5. Smart Question Routing Examples
+**Thai:**
+```
+User: "แสดงการแบ่งตั๋วการสนับสนุนตามประเภทบริการ"
+Bot: [สร้าง SQL query ดำเนินการ และส่งกลับตารางข้อมูล + กราฟวงกลม]
+
+User: "ลูกค้ากี่คนที่ชอบติดต่อทางอีเมล?"
+Bot: [การวิเคราะห์ SQL พร้อมผลลัพธ์เชิงตัวเลขและการแสดงผล]
+```
+
+**Spanish:**
+```
+User: "Muéstrame un desglose de tickets de soporte por tipo de servicio"
+Bot: [Genera consulta SQL, la ejecuta, devuelve tabla + gráfico circular]
+```
+
+### 5. Smart Question Routing Examples (Multilingual)
+
+**English:**
 ```
 User: "Tell me about Python programming"
 Response: General knowledge (low similarity to business documents)
@@ -335,11 +486,20 @@ Response: General knowledge (low similarity to business documents)
 User: "What are our payment terms with suppliers?"
 Response: Document search (high similarity to contract PDFs)
 
-User: "Compare different database technologies"
-Response: General knowledge (no relevant business context)
-
 User: "Show customer satisfaction metrics"
 Response: SQL generation (matches semantic model dimensions)
+```
+
+**Thai:**
+```
+User: "บอกเกี่ยวกับการเขียนโปรแกรม Python"
+Response: ความรู้ทั่วไป (ความคล้ายคลึงต่ำกับเอกสารธุรกิจ)
+
+User: "เงื่อนไขการชำระเงินกับซัพพลายเออร์ของเราคืออะไร?"
+Response: การค้นหาเอกสาร (ความคล้ายคลึงสูงกับ PDF สัญญา)
+
+User: "แสดงเมตริกความพึงพอใจของลูกค้า"
+Response: การสร้าง SQL (ตรงกับมิติของโมเดลเชิงความหมาย)
 ```
 
 ## 🔧 Technical Implementation Details
@@ -428,7 +588,9 @@ python -c "import os; from dotenv import load_dotenv; load_dotenv(); print('✅ 
 
 ### Manual Testing Checklist
 
-#### **1. Question Routing Validation**
+#### **1. Question Routing Validation (Multilingual)**
+
+**English Tests:**
 ```bash
 # Mathematical queries (should bypass document search)
 Test: "What is 5 + 3?"
@@ -440,23 +602,63 @@ Expected: Direct response "12"
 # General knowledge (should bypass document search)
 Test: "What is the capital of Japan?"
 Expected: Direct response "Tokyo"
-
-Test: "Who invented the lightbulb?"
-Expected: Historical information about Edison
 ```
 
-#### **2. Document RAG Testing**
+**Thai Tests:**
+```bash
+# Mathematical queries
+Test: "5+3 เท่ากับเท่าไร?"
+Expected: Direct Thai response "5+3 เท่ากับ 8"
+
+Test: "คำนวณ 144 ÷ 12"
+Expected: Direct Thai response "144 ÷ 12 เท่ากับ 12"
+
+# General knowledge
+Test: "เมืองหลวงของประเทศไทยคือที่ไหน?"
+Expected: Direct Thai response "เมืองหลวงของประเทศไทยคือ กรุงเทพมหานคร"
+```
+
+**Spanish Tests:**
+```bash
+# Mathematical queries
+Test: "¿Cuánto es 10 × 7?"
+Expected: Direct Spanish response "10 × 7 es igual a 70"
+
+# General knowledge
+Test: "¿Cuál es la capital de España?"
+Expected: Direct Spanish response "La capital de España es Madrid"
+```
+
+#### **2. Document RAG Testing (Multilingual)**
+
+**English Tests:**
 ```bash
 # Business document queries (should search PDFs)
 Test: "What are our contract terms with DataTires?"
-Expected: PDF content with citations
+Expected: PDF content with citations in English
 
 Test: "Summarize the ESG recycling policy"
-Expected: Policy excerpts with document sources
+Expected: Policy excerpts with document sources in English
+```
 
-# Similarity threshold testing
-Test: "Explain quantum computing principles"
-Expected: Fallback to general knowledge (low similarity to business docs)
+**Thai Tests:**
+```bash
+# Business document queries
+Test: "บริษัทเรามีสัญญากับ DataTires ไหม?"
+Expected: PDF content with citations in Thai
+
+Test: "สรุปนโยบาย ESG เกี่ยวกับการรีไซเคิล"
+Expected: Policy excerpts with document sources in Thai
+```
+
+**Fallback Testing:**
+```bash
+# Similarity threshold testing (any language)
+Test: "Explain quantum computing principles" (English)
+Expected: Fallback to general knowledge in English
+
+Test: "อธิบายหลักการคอมพิวเตอร์ควอนตัม" (Thai)
+Expected: Fallback to general knowledge in Thai
 ```
 
 #### **3. Data Analytics Validation**
@@ -512,7 +714,9 @@ DEBUG = True
 - ✅ **Slack Integration**: Rich message formatting with charts and comprehensive error handling
 - ✅ **Performance**: Fast responses due to intelligent routing and optimized token usage
 
-### Comprehensive Testing Matrix
+### Comprehensive Testing Matrix (Multilingual)
+
+**English Intelligence:**
 ```bash
 # Mathematical Intelligence
 "What is 15 × 7?"                    → Expected: "105"
@@ -525,14 +729,32 @@ DEBUG = True
 # Document RAG Verification
 "What are our contract terms?"       → Expected: PDF content + citations
 "Summarize our ESG policies"         → Expected: Policy excerpts + sources
+```
 
-# Analytics & Visualization
-"Show customer distribution"         → Expected: SQL + data table + chart
-"Breakdown support tickets"          → Expected: Analysis + visualization
+**Thai Intelligence:**
+```bash
+# Mathematical Intelligence
+"15 × 7 เท่ากับเท่าไร?"              → Expected: "15 × 7 เท่ากับ 105"
+"คำนวณ 256 ÷ 16"                    → Expected: "256 ÷ 16 เท่ากับ 16"
 
-# Edge Case Handling
-"Explain nuclear fusion"            → Expected: General knowledge (low document similarity)
-"What's our quantum computing policy?" → Expected: Fallback or "not found" message
+# General Knowledge Validation
+"เมืองหลวงของออสเตรเลียคือที่ไหน?"    → Expected: "เมืองหลวงของออสเตรเลียคือ แคนเบอร์รา"
+"ใครเขียน Romeo and Juliet?"       → Expected: "วิลเลียม เชกสเปียร์เขียน Romeo and Juliet"
+
+# Document RAG Verification  
+"เงื่อนไขสัญญาของเราคืออะไร?"         → Expected: เนื้อหา PDF + การอ้างอิงเป็นภาษาไทย
+"สรุปนโยบาย ESG ของเรา"            → Expected: ข้อความจากนโยบาย + แหล่งอ้างอิงเป็นภาษาไทย
+```
+
+**Spanish Intelligence:**
+```bash
+# Mathematical Intelligence
+"¿Cuánto es 15 × 7?"                → Expected: "15 × 7 es igual a 105"
+"Calcula 256 ÷ 16"                  → Expected: "256 ÷ 16 es igual a 16"
+
+# General Knowledge Validation
+"¿Cuál es la capital de Australia?"  → Expected: "La capital de Australia es Canberra"
+"¿Quién escribió Romeo y Julieta?"   → Expected: "William Shakespeare escribió Romeo y Julieta"
 ```
 
 ## 📚 Resources & Documentation
