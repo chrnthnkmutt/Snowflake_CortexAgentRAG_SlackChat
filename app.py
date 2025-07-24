@@ -317,16 +317,15 @@ def vectorize_answer(question):
     # First, check if this is a general knowledge question that doesn't need document context
     if is_general_question(question):
         # Answer general questions directly without document context
-        general_answer = SESSION.sql(f"""
-            SELECT SNOWFLAKE.CORTEX.COMPLETE('claude-3-5-sonnet', 
-                'You are a helpful assistant. IMPORTANT: You MUST respond in the SAME LANGUAGE as the user\'s question. 
-                If the user asks in Thai, respond in Thai. If in English, respond in English. 
-                If in any other language, respond in that same language.
-                
-                User Question: {question}
-                
-                Please provide a helpful answer in the same language as the question above.') as ANSWER
-        """).collect()[0]["ANSWER"]
+        prompt = f"""You are a helpful assistant. IMPORTANT: You MUST respond in the SAME LANGUAGE as the user's question. 
+If the user asks in Thai, respond in Thai. If in English, respond in English. 
+If in any other language, respond in that same language.
+
+User Question: {question}
+
+Please provide a helpful answer in the same language as the question above."""
+        
+        general_answer = SESSION.sql("SELECT SNOWFLAKE.CORTEX.COMPLETE('claude-3-5-sonnet', ?) as ANSWER", params=[prompt]).collect()[0]["ANSWER"]
         return {"sql": "", "text": str(general_answer), "citations": "General knowledge - no document citation needed"}
     
     df = SESSION.table('DASH_DB.DASH_SCHEMA.VECTORIZED_PDFS')
@@ -345,16 +344,15 @@ def vectorize_answer(question):
     
     if top_similarity < 0.3:  # Low similarity threshold
         # Question doesn't match document content well, answer as general knowledge
-        general_answer = SESSION.sql(f"""
-            SELECT SNOWFLAKE.CORTEX.COMPLETE('claude-3-5-sonnet', 
-                'You are a helpful assistant. IMPORTANT: You MUST respond in the SAME LANGUAGE as the user\'s question. 
-                If the user asks in Thai, respond in Thai. If in English, respond in English. 
-                If in any other language, respond in that same language.
-                
-                User Question: {question}
-                
-                Please provide a helpful answer in the same language as the question above.') as ANSWER
-        """).collect()[0]["ANSWER"]
+        prompt = f"""You are a helpful assistant. IMPORTANT: You MUST respond in the SAME LANGUAGE as the user's question. 
+If the user asks in Thai, respond in Thai. If in English, respond in English. 
+If in any other language, respond in that same language.
+
+User Question: {question}
+
+Please provide a helpful answer in the same language as the question above."""
+        
+        general_answer = SESSION.sql("SELECT SNOWFLAKE.CORTEX.COMPLETE('claude-3-5-sonnet', ?) as ANSWER", params=[prompt]).collect()[0]["ANSWER"]
         return {"sql": "", "text": str(general_answer), "citations": "General knowledge - no document citation needed"}
 
     citations = vector_similar.select_expr("LISTAGG(TITLE, ';') AS ALL_TITLES").collect()[0]["ALL_TITLES"]
